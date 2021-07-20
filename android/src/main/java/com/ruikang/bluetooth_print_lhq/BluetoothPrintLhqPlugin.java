@@ -135,7 +135,7 @@ public class BluetoothPrintLhqPlugin implements MethodCallHandler, RequestPermis
 
   }
 
-  private void getDevices(Result result){
+  private void getDevices(){
     List<Map<String, Object>> devices = new ArrayList<>();
     for (BluetoothDevice device : mBluetoothAdapter.getBondedDevices()) {
       Map<String, Object> ret = new HashMap<>();
@@ -143,9 +143,10 @@ public class BluetoothPrintLhqPlugin implements MethodCallHandler, RequestPermis
       ret.put("name", device.getName());
       ret.put("type", device.getType());
       devices.add(ret);
+      if(device != null && device.getName() != null){
+        invokeMethodUIThread("ScanResult", device);
+      }
     }
-
-    result.success(devices);
   }
 
   /**
@@ -181,8 +182,9 @@ public class BluetoothPrintLhqPlugin implements MethodCallHandler, RequestPermis
     Log.d(TAG,"start scan ");
 
     try {
-      startScan();
+//      startScan();
       result.success(null);
+      getDevices();
     } catch (Exception e) {
       result.error("startScan", e.getMessage(), e);
     }
